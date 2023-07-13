@@ -1,45 +1,22 @@
 pipeline {
     agent any
-    stages{
-    stage('Checkout') {
-        //disable to recycle workspace data to save time/bandwidth
-         steps{
-        deleteDir()
-        checkout scm
-         }
-        //enable for commit id in build number
-        //env.git_commit_id = sh returnStdout: true, script: 'git rev-parse HEAD'
-        //env.git_commit_id_short = env.git_commit_id.take(7)
-        //currentBuild.displayName = "#${currentBuild.number}-${env.git_commit_id_short}"
-    }
 
-    stage('NPM Install') {
-        /*withEnv(["NPM_CONFIG_LOGLEVEL=warn"]) {*/
-        steps{ 
-            bat  'npm install -g @angular/cli'
+    stages {
+        stage('Clone') { 
+           steps {
+               checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/golfcnt19/my-app']])
+            }
         }
-        /*}*/
-    }
-
-    stage('Build') {
-         steps{
-        milestone(20)
-        bat  'npm run build'
-         }
-    }
-
-    stage('Archive') {
-         steps{
-        bat  'tar -cvzf dist.tar.gz --strip-components=1 dist'
-        archive 'dist.tar.gz'
-         }
-    }
-
-    stage('Deploy') {
-         steps{
-        milestone(20)
-        echo "Deploying..."
-         }
-    }
+        stage('Build') { 
+            steps {
+               bat "docker build -t my-app/angular-app:latest ${workspace}"
+            }
+        }
+         stage('Deploy') { 
+            steps {
+                bat "docker run -d -it -p 80:80/tcp --name angular-app my-app/angular-app:latest"
+               echo "Success"
+            }
+        }
     }
 }
