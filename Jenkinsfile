@@ -17,7 +17,6 @@ pipeline {
         /*withEnv(["NPM_CONFIG_LOGLEVEL=warn"]) {*/
         steps{ 
             bat  'npm install -g @angular/cli'
-            bat  'ng --version'
         }
         /*}*/
     }
