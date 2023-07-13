@@ -24,7 +24,7 @@ pipeline {
     stage('Build') {
          steps{
         milestone(20)
-        bat  'ng build --prod'
+        bat  'npm run build'
          }
     }
 
