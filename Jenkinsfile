@@ -16,9 +16,9 @@ pipeline {
     stage('NPM Install') {
         /*withEnv(["NPM_CONFIG_LOGLEVEL=warn"]) {*/
         steps{ 
-            sh 'npm install'
-            sh 'npm install -g @angular/cli@1.0.2'
-            sh 'ng --version'
+            bat  'npm install'
+            bat  'npm install -g @angular/cli@1.0.2'
+            bat  'ng --version'
         }
         /*}*/
     }
@@ -26,13 +26,13 @@ pipeline {
     stage('Build') {
          steps{
         milestone(20)
-        sh 'ng build --prod'
+        bat  'ng build --prod'
          }
     }
 
     stage('Archive') {
          steps{
-        sh 'tar -cvzf dist.tar.gz --strip-components=1 dist'
+        bat  'tar -cvzf dist.tar.gz --strip-components=1 dist'
         archive 'dist.tar.gz'
          }
     }
